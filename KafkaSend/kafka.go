@@ -5,8 +5,10 @@ import (
 	"github.com/Shopify/sarama"
 )
 
+// 定义一个全局的kafka连接
 var kclient sarama.SyncProducer
 
+// 初始化kafka连接
 func Init(addr []string) (err error) {
 	config := sarama.NewConfig()
 	// tailf 包使用
@@ -23,6 +25,7 @@ func Init(addr []string) (err error) {
 	return
 }
 
+// 对外开放一个往kafka写数据的函数
 func SendToKafka(log, topic string) {
 	msg := &sarama.ProducerMessage{}
 	msg.Topic = topic

@@ -4,33 +4,42 @@ import (
 	"LogCollection/EtcdReadWatch"
 	"LogCollection/KafkaSend"
 	"LogCollection/TailFile"
+	"LogCollection/conf"
 	"fmt"
-	"time"
+	"gopkg.in/ini.v1"
+	"sync"
+)
+
+var (
+	kafkaConf conf.KafkaConf
+	etcdConf  conf.EtcdConf
+	wg        sync.WaitGroup
 )
 
 func main() {
-	KafkaSend.Init([]string{"192.168.198.163:9092"})
+	// 加载配置文件
+	cfg, err := ini.Load("./conf/config.ini")
+	if err != nil {
+		fmt.Printf("加载配置文件失败, err:%#v \n", err)
+		return
+	}
+	err = cfg.Section("kafka").MapTo(&kafkaConf)
+	err = cfg.Section("etcd").MapTo(&etcdConf)
 
-	addr := "192.168.198.163:2379"
-	key := "filepath"
-	cli, err := EtcdReadWatch.Init(addr)
+	// 初始化kafka连接
+	KafkaSend.Init([]string{kafkaConf.AddrPort})
+
+	// 初始化etcd连接
+	err = EtcdReadWatch.Init(etcdConf.AddrPort)
 	if err != nil {
 		fmt.Println("初始化etcd失败")
 	}
-	filePathObj, _ := EtcdReadWatch.GetFilePath(key, cli)
-	if filePathObj[0].Path == "" {
-		return
-	}
-	fmt.Printf("开始监听: %v\n", filePathObj[0].Path)
-	TailObj, _ := TailFile.NewTailFile(filePathObj[0].Path)
-	for {
-		select {
-		case line := <-TailObj.Lines:
-			fmt.Printf("日志: %v\n", line.Text)
-			KafkaSend.SendToKafka(line.Text, "testTopic")
-		default:
-			time.Sleep(500 * time.Millisecond)
-		}
-	}
+
+	filePathConf, _ := EtcdReadWatch.GetFilePath(etcdConf.Key)
+	TailFile.Init(filePathConf)
+	NewConfCh := TailFile.GetNewConfCh()
+	wg.Add(1)
+	EtcdReadWatch.WatchChang(etcdConf.Key, NewConfCh)
+	wg.Wait()
 
 }
