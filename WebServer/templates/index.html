@@ -1,0 +1,221 @@
+{{ define "index.html" }}
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>{{ .title }}</title>
+        <!-- Tell the browser to be responsive to screen width -->
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- Font Awesome -->
+        <link rel="stylesheet" href="/static/css/all.min.css">
+        <!-- Ionicons -->
+        <link rel="stylesheet" href="/static/css/ionicons.min.css">
+        <!-- Theme style -->
+        <link rel="stylesheet" href="/static/css/adminlte.min.css">
+        <!-- Google Font: Source Sans Pro -->
+        <link href="/static/css/6xKydSBYKcSV-LCoeQqfX1RYOo3ik4zwlxdu.woff2" rel="stylesheet">
+
+        <link rel="stylesheet" href="/static/css/bootstrap-4.min.css">
+        <!-- Toastr -->
+        <link rel="stylesheet" href="/static/css/toastr.min.css">
+
+    </head>
+    <body class="hold-transition sidebar-mini">
+
+    <div class="modal fade" id="modal-default">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">新增KEY信息</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label>KEY</label>
+                        <input name="etcdkey" type="text" class="form-control" placeholder="输入ETCD的KEY">
+                    </div>
+                    <div class="form-group">
+                        <label>日志信息</label>
+                        <textarea name="etcdlog" class="form-control" rows="3"
+                                  placeholder="输入topic及日志路径信息,格式topic:path,多个日志用';'分隔"
+                                  style="margin-top: 0px; margin-bottom: 0px; height: 85px;"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer justify-content-between">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                    <button id="putkey" type="button" class="btn btn-primary">保存新增</button>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
+
+    <div class="wrapper">
+        <!-- Main Sidebar Container -->
+        <aside class="main-sidebar sidebar-dark-primary elevation-4">
+            <!-- Brand Logo -->
+            <a href="#" class="brand-link">
+                <img src="/static/img/AdminLTELogo.png"
+                     alt="AdminLTE Logo"
+                     class="brand-image img-circle elevation-3"
+                     style="opacity: .8">
+                <span class="brand-text font-weight-light">LogCollection</span>
+            </a>
+
+            <!-- Sidebar -->
+            <div class="sidebar">
+                <!-- Sidebar user (optional) -->
+
+
+                <!-- Sidebar Menu -->
+                <nav class="mt-2">
+                    <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu"
+                        data-accordion="false">
+                        <!-- Add icons to the links using the .nav-icon class
+                             with font-awesome or any other icon font library -->
+
+                        <li class="nav-header">集群列表</li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link">
+                                <i class="nav-icon far fa-circle text-danger"></i>
+                                <p class="text">测试集群一</p>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+                <!-- /.sidebar-menu -->
+            </div>
+            <!-- /.sidebar -->
+        </aside>
+
+        <!-- Content Wrapper. Contains page content -->
+        <div class="content-wrapper">
+
+
+            <div style="margin-left: 15px;margin-bottom: 10px">
+                <button type="button" data-widget="pushmenu" class="btn btn-default" data-toggle="modal"
+                        style="margin-top: 10px">
+                    收起侧边栏
+                </button>
+                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modal-default"
+                        style="margin-top: 10px">
+                    新增KEY信息
+                </button>
+            </div>
+            <!-- Main content -->
+            <section class="content">
+                <div class="container-fluid">
+                    <div class="row">
+
+                        <!-- /.col -->
+                        <!-- /.col -->
+                    </div>
+                    <!-- /.row -->
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h3 class="card-title">信息</h3>
+
+                                    <div class="card-tools">
+                                        <div class="input-group input-group-sm" style="width: 150px;">
+                                            <input type="text" name="table_search" class="form-control float-right"
+                                                   placeholder="Search">
+
+                                            <div class="input-group-append">
+                                                <button type="submit" class="btn btn-default"><i
+                                                            class="fas fa-search"></i></button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- /.card-header -->
+                                <div class="card-body table-responsive p-0">
+                                    <table class="table table-hover text-nowrap">
+                                        <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>KEY</th>
+                                            <th>日志文件个数</th>
+                                            <th>操作</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr>
+                                            <td>1</td>
+                                            <td>/logagent/192.168.1.105/collect_config</td>
+                                            <td>10</td>
+                                            <td>查看详情|删除</td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <!-- /.card-body -->
+                            </div>
+                            <!-- /.card -->
+                        </div>
+                    </div>
+                    <!-- /.row -->
+                    <div class="row">
+                        <div class="col-12">
+                            <!-- /.card -->
+                        </div>
+                    </div>
+                    <!-- /.row -->
+                </div><!-- /.container-fluid -->
+            </section>
+            <!-- /.content -->
+        </div>
+
+
+        <!-- Control Sidebar -->
+        <aside class="control-sidebar control-sidebar-dark">
+            <!-- Control sidebar content goes here -->
+        </aside>
+        <!-- /.control-sidebar -->
+    </div>
+    <!-- ./wrapper -->
+
+    <!-- jQuery -->
+    <script src="/static/js/jquery.min.js"></script>
+    <!-- Bootstrap 4 -->
+    <script src="/static/js/bootstrap.bundle.min.js"></script>
+    <!-- AdminLTE App -->
+    <script src="/static/js/adminlte.min.js"></script>
+    <!-- AdminLTE for demo purposes -->
+    <script src="/static/js/demo.js"></script>
+
+
+    <!-- SweetAlert2 -->
+    <script src="/static/js/sweetalert2.min.js"></script>
+    <!-- Toastr -->
+    <script src="/static/js/toastr.min.js"></script>
+
+    <script>
+        jQuery('#putkey').click(function () {
+            console.log("putkey");
+            var keyetcd = $('input[name="etcdkey"]').val();
+            var value = $('textarea[name="etcdlog"]').val();
+            var v1 = value.split(";");
+            var v2 = [];
+            for (var i = 0, len = v1.length; i < len; i++) {
+                var v = v1[i].split(":");
+                v2.push({"topic":v[0], "path":v[1]})
+            }
+            var kv = {"key":keyetcd, "value":v2}
+            var str = JSON.stringify(kv)
+            jQuery.post("/value/key", str, function (response) {
+              console.log(response)
+            }, "json");
+            $("#modal-default").modal('hide');
+        })
+
+    </script>
+
+    </body>
+    </html>
+{{ end }}
