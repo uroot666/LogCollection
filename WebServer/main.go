@@ -22,7 +22,12 @@ func Init() {
 	})
 	// 首页
 	r.GET("/", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "index.html", gin.H{"title": "LogCollectionWeb管理"})
+		all, _ := dao.GetAllKey("/logagent/")
+		var keymap = make(map[string]int)
+		for k, v := range all{
+			keymap[k] = len(v)
+		}
+		c.HTML(http.StatusOK, "index.html", gin.H{"title": "LogCollectionWeb管理", "keymap": keymap})
 	})
 
 	// 获取所有key的信息
@@ -30,6 +35,7 @@ func Init() {
 	// 操作单个key(get put del)
 	r.GET("/value/key", GetKey)
 	r.POST("/value/key", PutKey)
+	r.PUT("/value/key", PutKey)
 	r.DELETE("/value/key", DeleteKey)
 }
 
@@ -63,13 +69,9 @@ func PutKey(c *gin.Context) {
 	//		{Path: "c:/tmp/test3/mysql.log", Topic: "mysql_log"},
 	//	},
 	//}
-	fmt.Println("测试。。。")
 	var kv dao.KeyValue
 	if err := c.ShouldBindJSON(&kv); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		var t = make([]byte, 100)
-		c.Request.Body.Read(t)
-		fmt.Println(123, err, string(t))
 		return
 	}
 	_ = dao.PutKey(&kv)

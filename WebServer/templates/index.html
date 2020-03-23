@@ -19,10 +19,24 @@
         <link rel="stylesheet" href="/static/css/bootstrap-4.min.css">
         <!-- Toastr -->
         <link rel="stylesheet" href="/static/css/toastr.min.css">
+        <style>
+            .rowinput {
+                width: 350px;
+                float: left;
+                display: inline-block;
+                margin-bottom: 5px;
+            }
+
+            .rowdel {
+                margin-left: 10px;
+                margin-bottom: 5px;
+            }
+        </style>
 
     </head>
     <body class="hold-transition sidebar-mini">
 
+    <!-- 新增key模态框 -->
     <div class="modal fade" id="modal-default">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -35,13 +49,18 @@
                 <div class="modal-body">
                     <div class="form-group">
                         <label>KEY</label>
-                        <input name="etcdkey" type="text" class="form-control" placeholder="输入ETCD的KEY">
+                        <input name="logkey" type="text" class="form-control" placeholder="输入ETCD的KEY">
                     </div>
-                    <div class="form-group">
-                        <label>日志信息</label>
-                        <textarea name="etcdlog" class="form-control" rows="3"
-                                  placeholder="输入topic及日志路径信息,格式topic:path,多个日志用';'分隔"
-                                  style="margin-top: 0px; margin-bottom: 0px; height: 85px;"></textarea>
+                    <div class="form-group" id="logvalue">
+                        <div><label>日志信息</label></div>
+                        <div>
+                            <input type="text" class="form-control"
+                                   style="width: 350px;float: left;display: inline-block;margin-bottom: 5px;"
+                                   placeholder="格式topic=path">
+                            <input type="button" class="btn btn-info newrow"
+                                   style="margin-left: 10px;margin-bottom: 5px;" value="新增一行">
+                            </input>
+                        </div>
                     </div>
                 </div>
                 <div class="modal-footer justify-content-between">
@@ -49,9 +68,40 @@
                     <button id="putkey" type="button" class="btn btn-primary">保存新增</button>
                 </div>
             </div>
-            <!-- /.modal-content -->
         </div>
-        <!-- /.modal-dialog -->
+    </div>
+
+    <div class="modal fade" id="modal-details">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">查看key对应详情</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label>KEY值</label>
+                        <input id="key-detail" name="detail-logkey" type="text" class="form-control"
+                               placeholder="输入ETCD的KEY">
+                    </div>
+                    <div class="form-group" id="detail-logvalue">
+                        <div><label>日志信息</label></div>
+                        <div id="insert-detail">
+
+                        </div>
+                    </div>
+                    <div>
+                        <button type="button" class="btn btn-info" onclick="createInput()">增加一行</button>
+                    </div>
+                </div>
+                <div class="modal-footer justify-content-between">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                    <button id="putkey-detail" type="button" class="btn btn-primary">保存修改</button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <div class="wrapper">
@@ -69,8 +119,6 @@
             <!-- Sidebar -->
             <div class="sidebar">
                 <!-- Sidebar user (optional) -->
-
-
                 <!-- Sidebar Menu -->
                 <nav class="mt-2">
                     <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu"
@@ -145,12 +193,21 @@
                                         </tr>
                                         </thead>
                                         <tbody>
+                                        {{range $key, $value := .keymap }}
                                         <tr>
                                             <td>1</td>
-                                            <td>/logagent/192.168.1.105/collect_config</td>
-                                            <td>10</td>
-                                            <td>查看详情|删除</td>
+                                            <td>{{$key}} </td>
+                                            <td>{{$value}}</td>
+                                            <td>
+                                                <button key={{$key}}
+                                                        onclick="keydetail(this)">详情
+                                                </button>
+                                                <button key={{$key}}
+                                                        onclick="keydel(this)">删除
+                                                </button>
+                                            </td>
                                         </tr>
+                                            {{end}}
                                         </tbody>
                                     </table>
                                 </div>
@@ -196,21 +253,133 @@
     <script src="/static/js/toastr.min.js"></script>
 
     <script>
-        jQuery('#putkey').click(function () {
-            console.log("putkey");
-            var keyetcd = $('input[name="etcdkey"]').val();
-            var value = $('textarea[name="etcdlog"]').val();
-            var v1 = value.split(";");
-            var v2 = [];
-            for (var i = 0, len = v1.length; i < len; i++) {
-                var v = v1[i].split(":");
-                v2.push({"topic":v[0], "path":v[1]})
+        // 用于清空查看详情的模态框，模态框关闭后删除所有input
+        $('#modal-details').on('hidden.bs.modal', function () {
+            var insert = $("#insert-detail")
+            insert.empty()
+            console.log("清空")
+        });
+
+        // 查看详情按钮对应的动作,通过按钮保存的key名请求数据，然后添加并打开模态框
+        function keydetail(self) {
+            var key = $(self).attr("key");
+            console.log(key)
+            $("#key-detail").val(key)
+            var insert = $("#insert-detail")
+            $.getJSON("/value/key" + "?key=" + key,
+                function (result) {
+                    console.log(result["key"]);
+                    $.each(result["value"], function (i, field) {
+                        var rowdiv = document.createElement("div");
+                        insert.append(rowdiv)
+                        var rowinput = document.createElement("input");
+                        rowinput.type = "text";
+                        rowinput.classList.add("form-control", "rowinput");
+                        rowinput.placeholder = "格式topic=path";
+                        rowinput.value = field["topic"] + "=" + field["path"]
+                        rowdiv.append(rowinput)
+                        var rowdel = document.createElement("input");
+                        rowdel.type = "button";
+                        rowdel.value = "删除"
+                        rowdel.classList.add("btn", "btn-warning", "rowdel")
+                        $(rowdel).attr("onclick", "delinput(this)")
+                        rowdiv.append(rowdel)
+                        console.log(field)
+                    })
+                }
+            );
+            $("#modal-details").modal('show')
+        }
+
+        // 删除触发触发事件的父级
+        function delinput(self) {
+            $(self).parent().remove()
+        }
+
+        // 查看详情模态框手动添加input
+        function createInput() {
+            var insert = $("#insert-detail")
+            var rowdiv = document.createElement("div");
+            insert.append(rowdiv)
+            var rowinput = document.createElement("input");
+            rowinput.type = "text";
+            rowinput.classList.add("form-control", "rowinput");
+            rowinput.placeholder = "格式topic=path";
+            rowdiv.append(rowinput)
+            var rowdel = document.createElement("input");
+            rowdel.type = "button";
+            rowdel.value = "删除"
+            rowdel.classList.add("btn", "btn-warning", "rowdel")
+            $(rowdel).attr("onclick", "delinput(this)")
+            rowdiv.append(rowdel)
+        }
+
+        // 将修改的详情模态框的数据发送到服务端
+        jQuery("#putkey-detail").click(function () {
+            var logkey = $('input[name="detail-logkey"]').val();
+            var logvalueArr = [];
+            var txt = $('#detail-logvalue').find(':text');
+            for (var i = 0; i < txt.length; i++) {
+                var v = txt.eq(i).val().split("=");
+                logvalueArr.push({"topic": v[0], "path": v[1]});
+                txt.eq(i).val("")
             }
-            var kv = {"key":keyetcd, "value":v2}
-            var str = JSON.stringify(kv)
-            jQuery.post("/value/key", str, function (response) {
-              console.log(response)
-            }, "json");
+            var jsonStr = JSON.stringify({"key": logkey, "value": logvalueArr})
+            jQuery.ajax({
+                type: "PUT",
+                url: "/value/key",
+                contentType: "application/json",
+                data: jsonStr,
+                success: function (result) {
+                    console.log(result)
+                }
+            })
+            // 消息发送完成后关闭模态框
+            $("#modal-details").modal('hide');
+        })
+
+        // 删除key
+        function keydel (self){
+            var key = $(self).attr("key");
+            jQuery.ajax({
+                type: "DELETE",
+                url: "/value/key" + "?key=" + key,
+                success: function (result) {
+                    console.log(result)
+                }
+            })
+
+        }
+
+        // 克隆一个新增key模态框中包含input的div
+        jQuery('.newrow').click(function () {
+            var Clone = $(this).parent().clone();
+            Clone.children(":button").val("删除").removeClass("btn-info").removeClass("newrow").addClass("btn-warning").attr("onclick", "delinput(this)")
+            $("#logvalue").append(Clone)
+        });
+
+        // 将新增的key信息发送post请求
+        jQuery('#putkey').click(function () {
+            var logkey = $('input[name="logkey"]').val();
+            $('input[name="logkey"]').val("");
+            var logvalueArr = [];
+            var txt = $('#logvalue').find(':text');
+            for (var i = 0; i < txt.length; i++) {
+                var v = txt.eq(i).val().split("=");
+                logvalueArr.push({"topic": v[0], "path": v[1]});
+                txt.eq(i).val("")
+            }
+            var jsonStr = JSON.stringify({"key": logkey, "value": logvalueArr})
+            jQuery.ajax({
+                type: "POST",
+                url: "/value/key",
+                contentType: "application/json",
+                data: jsonStr,
+                success: function (result) {
+                    console.log(result)
+                }
+            })
+            // 消息发送完成后关闭模态框
             $("#modal-default").modal('hide');
         })
 
