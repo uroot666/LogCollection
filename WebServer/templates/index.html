@@ -19,6 +19,7 @@
         <link rel="stylesheet" href="/static/css/bootstrap-4.min.css">
         <!-- Toastr -->
         <link rel="stylesheet" href="/static/css/toastr.min.css">
+
         <style>
             .rowinput {
                 width: 350px;
@@ -52,7 +53,7 @@
                         <input name="logkey" type="text" class="form-control" placeholder="输入ETCD的KEY">
                     </div>
                     <div class="form-group" id="logvalue">
-                        <div><label>日志信息</label></div>
+                        <div><label>日志条目</label></div>
                         <div>
                             <input type="text" class="form-control"
                                    style="width: 350px;float: left;display: inline-block;margin-bottom: 5px;"
@@ -87,7 +88,7 @@
                                placeholder="输入ETCD的KEY">
                     </div>
                     <div class="form-group" id="detail-logvalue">
-                        <div><label>日志信息</label></div>
+                        <div><label>日志条目</label></div>
                         <div id="insert-detail">
 
                         </div>
@@ -194,20 +195,20 @@
                                         </thead>
                                         <tbody>
                                         {{range $key, $value := .keymap }}
-                                        <tr>
-                                            <td>1</td>
-                                            <td>{{$key}} </td>
-                                            <td>{{$value}}</td>
-                                            <td>
-                                                <button key={{$key}}
-                                                        onclick="keydetail(this)">详情
-                                                </button>
-                                                <button key={{$key}}
-                                                        onclick="keydel(this)">删除
-                                                </button>
-                                            </td>
-                                        </tr>
-                                            {{end}}
+                                            <tr>
+                                                <td>1</td>
+                                                <td>{{$key}} </td>
+                                                <td>{{$value}}</td>
+                                                <td>
+                                                    <button key={{$key}}
+                                                            onclick="keydetail(this)" class="btn btn-info">编辑
+                                                    </button>
+                                                    <button key={{$key}}
+                                                            onclick="keydel(this)" class="btn btn-danger">删除
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        {{end}}
                                         </tbody>
                                     </table>
                                 </div>
@@ -237,6 +238,8 @@
     </div>
     <!-- ./wrapper -->
 
+    <script src="/static/js/sweetalert2.js"></script>
+
     <!-- jQuery -->
     <script src="/static/js/jquery.min.js"></script>
     <!-- Bootstrap 4 -->
@@ -246,9 +249,6 @@
     <!-- AdminLTE for demo purposes -->
     <script src="/static/js/demo.js"></script>
 
-
-    <!-- SweetAlert2 -->
-    <script src="/static/js/sweetalert2.min.js"></script>
     <!-- Toastr -->
     <script src="/static/js/toastr.min.js"></script>
 
@@ -336,19 +336,36 @@
             })
             // 消息发送完成后关闭模态框
             $("#modal-details").modal('hide');
+            window.location.reload();
         })
 
         // 删除key
-        function keydel (self){
+        function keydel(self) {
             var key = $(self).attr("key");
-            jQuery.ajax({
-                type: "DELETE",
-                url: "/value/key" + "?key=" + key,
-                success: function (result) {
-                    console.log(result)
+            Swal.fire({
+                title: '确定删除?',
+                text: "",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'DELETE'
+            }).then((result) => {
+                if (result.value) {
+                    jQuery.ajax({
+                        type: "DELETE",
+                        url: "/value/key" + "?key=" + key,
+                        success: function (result) {
+                            Swal.fire(
+                                '删除!',
+                                '删除完成.',
+                                'success'
+                            )
+                            window.location.reload()
+                        }
+                    })
                 }
             })
-
         }
 
         // 克隆一个新增key模态框中包含input的div
@@ -381,6 +398,7 @@
             })
             // 消息发送完成后关闭模态框
             $("#modal-default").modal('hide');
+            window.location.reload();
         })
 
     </script>
