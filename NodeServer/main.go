@@ -5,9 +5,11 @@ import (
 	"LogCollection/KafkaSend"
 	"LogCollection/TailFile"
 	"LogCollection/conf"
+	"LogCollection/register"
 	"fmt"
 	"gopkg.in/ini.v1"
 	"sync"
+	"time"
 )
 
 var (
@@ -26,6 +28,10 @@ func main() {
 	err = cfg.Section("kafka").MapTo(&kafkaConf)
 	err = cfg.Section("etcd").MapTo(&etcdConf)
 
+	// 初始化注册文件
+	register.Init("./register.json")
+
+	time.Sleep(100 * time.Second)
 	// 初始化kafka连接
 	KafkaSend.Init([]string{kafkaConf.AddrPort})
 
