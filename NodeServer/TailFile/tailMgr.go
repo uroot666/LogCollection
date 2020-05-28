@@ -36,10 +36,11 @@ func GetNewConfCh() (NewConfCh chan []EtcdReadWatch.FilePath) {
 	return Mgr.NewConfigch
 }
 
-// 监控etcd的配置信息变更
+// 启动tail管理者。监听已有log文件，并持续跟踪变化
 func (m TailMgr) run() {
+	// 从etcd的watch中获取最新变动，根据变动做处理
 	for newconf := range m.NewConfigch {
-		// 将新配置和旧配置做对比，如果有新增就增加goroutine监控日志文件
+		// 将新配置和旧配置做对比，如果无变动则不处理，有新增就增加goroutine监控日志文件
 		for _, c1 := range newconf {
 			existence := false
 			c1Str := fmt.Sprintf("%s_%s", c1.Topic, c1.Path)

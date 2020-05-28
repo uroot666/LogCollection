@@ -11,7 +11,6 @@ var kclient sarama.SyncProducer
 // 初始化kafka连接
 func Init(addr []string) (err error) {
 	config := sarama.NewConfig()
-	// tailf 包使用
 	config.Producer.RequiredAcks = sarama.WaitForAll          // 发送完数据需要leader和follow确认
 	config.Producer.Partitioner = sarama.NewRandomPartitioner // 新选出一个partition
 	config.Producer.Return.Successes = true                   // 成功交付的信息将在 success channel 返回
@@ -26,15 +25,17 @@ func Init(addr []string) (err error) {
 }
 
 // 对外开放一个往kafka写数据的函数
-func SendToKafka(log, topic string) {
+func SendToKafka(log, topic string) (err error) {
 	msg := &sarama.ProducerMessage{}
 	msg.Topic = topic
 	msg.Value = sarama.StringEncoder(log)
-
 	// 发送消息
-	pid, offset, err := kclient.SendMessage(msg)
+	// pid, offset, err := kclient.SendMessage(msg)
+	_, _, err = kclient.SendMessage(msg)
 	if err != nil {
 		fmt.Println("发送消息失败:", err)
+		return
 	}
-	fmt.Printf("发送消息结果: pid: %v offset: %v\n", pid, offset)
+	return
+	//fmt.Printf("发送消息结果: pid: %v offset: %v\n", pid, offset)
 }

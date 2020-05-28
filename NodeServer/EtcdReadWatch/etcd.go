@@ -16,6 +16,7 @@ type FilePath struct {
 // 给定一个全局的etcd连接对象
 var cli *clientv3.Client
 
+// 初始化etcd连接
 func Init(addr string) (err error) {
 	cli, err = clientv3.New(clientv3.Config{
 		Endpoints:   []string{addr},
@@ -28,6 +29,7 @@ func Init(addr string) (err error) {
 	return
 }
 
+// 通过给定主机名称到etcd中获取对应的值，值表示有哪些日志需要收集，以及在kafka中对应的topic
 func GetFilePath(key string) (filepath []FilePath, err error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 	resp, err := cli.Get(ctx, key)
