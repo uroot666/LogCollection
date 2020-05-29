@@ -24,7 +24,12 @@ func Init(fileConfg []EtcdReadWatch.FilePath) (err error) {
 	}
 	for _, conf := range fileConfg {
 		fm := fmt.Sprintf("%s_%s", conf.Topic, conf.Path)
-		obj, _ := NewTailFile(conf.Topic, conf.Path)
+		var obj *TailFile
+		obj = new(TailFile)
+		obj, _ = NewTailFile(conf.Topic, conf.Path)
+		if obj == nil {
+			return err
+		}
 		Mgr.Instance[fm] = obj
 	}
 	go Mgr.run()

@@ -6,6 +6,7 @@ import (
 	"LogCollection/TailFile"
 	"LogCollection/conf"
 	"LogCollection/register"
+	"LogCollection/Log"
 	"fmt"
 	"gopkg.in/ini.v1"
 	"sync"
@@ -27,6 +28,11 @@ func main() {
 	err = cfg.Section("kafka").MapTo(&kafkaConf)
 	err = cfg.Section("etcd").MapTo(&etcdConf)
 
+	// 初始化Log日志对象，用于提供全局的日志记录
+	Log.InitLogger()
+	LogObj, _ := Log.GetLogObj()
+	LogObj.Infof("开始启动")
+
 	// 初始化注册表文件，用于记录文件的偏移量
 	register.Init("./register.json")
 
@@ -36,11 +42,12 @@ func main() {
 	// 初始化etcd连接
 	err = EtcdReadWatch.Init(etcdConf.AddrPort)
 	if err != nil {
-		fmt.Println("初始化etcd失败")
+		// fmt.Println("初始化etcd失败")
+		LogObj.Errorf("初始化etcd失败")
 	}
 
 	filePathConf, _ := EtcdReadWatch.GetFilePath(etcdConf.Key)
-	TailFile.Init(filePathConf)
+	_ = TailFile.Init(filePathConf)
 	NewConfCh := TailFile.GetNewConfCh()
 	wg.Add(1)
 	EtcdReadWatch.WatchChang(etcdConf.Key, NewConfCh)

@@ -2,10 +2,12 @@ package TailFile
 
 import (
 	"LogCollection/KafkaSend"
+	"LogCollection/Log"
 	"LogCollection/register"
 	"context"
 	"fmt"
 	"github.com/hpcloud/tail"
+	"go.uber.org/zap"
 	"time"
 )
 
@@ -18,8 +20,15 @@ type TailFile struct {
 	cancel   context.CancelFunc // 用于后面结束对应的goroutine
 }
 
+var LogObj *zap.SugaredLogger
+
 // 监听日志文件，返回文件对象的指针
 func NewTailFile(topic, path string) (TailObj *TailFile, err error) {
+	LogObj, _ = Log.GetLogObj()
+	if LogObj == nil {
+		return
+	}
+
 	regMgr := register.GetRegMgr()
 	regMgr.Lock.RLock()
 	fm := fmt.Sprintf("%s_%s", topic, path)
@@ -32,6 +41,7 @@ func NewTailFile(topic, path string) (TailObj *TailFile, err error) {
 		Location:  &tail.SeekInfo{Offset: offset, Whence: 0}, // 从文件的哪个地方开始读
 		MustExist: false,                                     // 文件不存在不报错
 		Poll:      true,
+		Logger:    tail.DiscardingLogger, // 禁用日志输出
 		//Location:  &tail.SeekInfo{Offset: 0, Whence: io.SeekStart}, // 从文件最开始读取
 	}
 	fObj, err := tail.TailFile(path, config)
@@ -43,7 +53,8 @@ func NewTailFile(topic, path string) (TailObj *TailFile, err error) {
 		ctx:      ctx,
 		cancel:   cancel,
 	}
-	fmt.Println("开始的offset", offset)
+	// fmt.Println("开始的offset", offset)
+	LogObj.Debugf("开始的offset %v", offset)
 	go TailObj.run()
 	return
 }

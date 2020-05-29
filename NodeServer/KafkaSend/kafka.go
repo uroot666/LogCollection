@@ -1,12 +1,14 @@
 package KafkaSend
 
 import (
-	"fmt"
+	"LogCollection/Log"
 	"github.com/Shopify/sarama"
 )
 
 // 定义一个全局的kafka连接
 var kclient sarama.SyncProducer
+
+var LogObj,_ = Log.GetLogObj()
 
 // 初始化kafka连接
 func Init(addr []string) (err error) {
@@ -18,7 +20,8 @@ func Init(addr []string) (err error) {
 	// 连接kafka
 	kclient, err = sarama.NewSyncProducer(addr, config)
 	if err != nil {
-		fmt.Println("producer closed, err:", err)
+		// fmt.Println("producer closed, err:", err)
+		LogObj.Errorf("producer closed, err: %s", err)
 		return
 	}
 	return
@@ -33,7 +36,8 @@ func SendToKafka(log, topic string) (err error) {
 	// pid, offset, err := kclient.SendMessage(msg)
 	_, _, err = kclient.SendMessage(msg)
 	if err != nil {
-		fmt.Println("发送消息失败:", err)
+		// fmt.Println("发送消息失败:", err)
+		LogObj.Errorf("发送消息失败: %s", err)
 		return
 	}
 	return
