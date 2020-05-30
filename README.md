@@ -3,7 +3,7 @@
 
 ## 两个组件
 
-### NodeServer
+### 一、NodeServer
 运行在需要日志收集的节点上，根据从etcd获取到的日志路径列表来收集日志。
 
 #### 依赖环境
@@ -15,17 +15,17 @@
 2. 根据从etcd中获取的日志列表的信息，初始化一个TailMgr的对象，用于管理实际监听文件变动的TailFile对象。TailMgr会将topic与文件路径拼接成一个字符串做唯一标识，来创建Tail对象。之后会维护一个循环来从etcd传输数据的channel中读取配置变动，根据日志条目的增删来调整TailFile对象的创建以及结束。
 3. TailMgr管理者创建TailFile对象。创建之前会通过最开始register对象的一个方法，来获取该日志是否有被读取过。如果有则设置从记录的偏移位置开始读取，没有则从0开始读取。对象会有一个run方法维护一个循环来读取日志变动，有变动则通过kafka模块暴露的函数来发送到kafka中。发送成功之后会记录当前偏移量，避免后续客户端重启之后产生重复发送。
 
-### WebServer
+### 二、WebServer
 提供一个restful api接口以及一个web页面，用来修改和查看etcd中存储的NodeServer监听的所有日志的情况。
 
 #### 依赖环境
 1. etcd: 存储需要监听的日志的列表
 
-#### api
+#### 接口api
+页面中也是直接请求的这几个接口
 ```
 GET("/value/allKey")
 
-// 操作单个key
 GET("/value/key")  
 Query key=topic
 
@@ -43,9 +43,9 @@ Query key=topic
 ```
 #### 页面
 页面支持增删改查所有topic对应的日志条目。增加日志条目的格式为`topic=filepath`。
-![image]https://raw.githubusercontent.com/uroot666/LogCollection/master/img/web.png
+![image](https://raw.githubusercontent.com/uroot666/LogCollection/master/img/web.png)
 
 ## 使用
-创建好etcd以及kafka，然后修改NodeServer以及WebServer的conf文件夹中的conf.ini。
-NodeServer运行到需要监听日志的节点，可以连接上etcd与kafka。
-WebServer可以脸上etcd与kafka即可，不限制部署位置。默认是监听的8080端口。
+创建好etcd以及kafka，然后修改NodeServer以及WebServer的conf文件夹中的conf.ini。<br>
+NodeServer运行到需要监听日志的节点，可以连接上etcd与kafka。<br>
+WebServer可以脸上etcd与kafka即可，不限制部署位置。默认是监听的8080端口。<br>
