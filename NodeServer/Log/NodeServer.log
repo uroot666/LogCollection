@@ -1,0 +1,7 @@
+2020-05-30T23:24:44.923+0800	INFO	NodeServer/main.go:34	开始启动
+2020-05-30T23:24:44.948+0800	DEBUG	register/register.go:61	Decoder success
+2020-05-30T23:24:44.973+0800	DEBUG	EtcdReadWatch/etcd.go:53	etcd value: [{"path":"D:\\mysql.log","topic":"mysql"}]
+2020-05-30T23:24:44.973+0800	DEBUG	TailFile/tailfile.go:57	开始的offset 67
+2020-05-30T23:24:50.026+0800	DEBUG	EtcdReadWatch/etcd.go:72	etcd get value: [{"path":"D:\\mysql.log","topic":"mysql"}]
+2020-05-30T23:25:15.088+0800	DEBUG	EtcdReadWatch/etcd.go:72	etcd get value: [{"path":"D:\\mysql.log","topic":"mysql"},{"path":"D:\\nginx.log","topic":"nginx"}]
+2020-05-30T23:25:15.090+0800	DEBUG	TailFile/tailfile.go:57	开始的offset 72

@@ -57,7 +57,8 @@ require (
 	google.golang.org/genproto v0.0.0-20200310143817-43be25429f5a // indirect
 	gopkg.in/check.v1 v1.0.0-20200227125254-8fa46927fb4f // indirect
 	gopkg.in/fsnotify.v1 v1.4.7 // indirect
-	gopkg.in/ini.v1 v1.53.0
+	gopkg.in/ini.v1 v1.57.0
+	gopkg.in/natefinch/lumberjack.v2 v2.0.0 // indirect
 	gopkg.in/tomb.v1 v1.0.0-20141024135613-dd632973f1e7 // indirect
 	gopkg.in/yaml.v3 v3.0.0-20200506231410-2ff61e1afc86 // indirect
 	honnef.co/go/tools v0.0.1-2020.1.4 // indirect

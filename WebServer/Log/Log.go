@@ -31,7 +31,7 @@ func getEncoder() zapcore.Encoder {
 // 在zap中加入Lumberjack支持
 func getLogWriter() zapcore.WriteSyncer {
 	lumberJackLogger := &lumberjack.Logger{
-		Filename:   "./Log/NodeServer.log", // 日志文件的位置
+		Filename:   "./Log/WebServer.log", // 日志文件的位置
 		MaxSize:    1,                // 在进行切割之前，日志文件的最大大小（以MB为单位）
 		MaxBackups: 5,                // 保留旧文件的最大个数
 		MaxAge:     30,               // 保留旧文件的最大天数

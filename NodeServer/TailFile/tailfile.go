@@ -87,5 +87,4 @@ func (f TailFile) run() {
 			time.Sleep(500 * time.Millisecond)
 		}
 	}
-
 }

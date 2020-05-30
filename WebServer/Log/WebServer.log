@@ -1,0 +1,18 @@
+2020-05-30T20:00:33.160+0800	DEBUG	WebServer/main.go:33	载入配置成功:192.168.1.111:2380, /logagent/
+2020-05-30T20:00:59.931+0800	DEBUG	dao/data.go:64	etcd value: [{"path":"D:\\nginx.log","topic":"nginx"}]
+2020-05-30T20:01:54.327+0800	DEBUG	dao/data.go:64	etcd value: [{"path":"D:\\nginx.log","topic":"nginx"},{"path":"D:\\mysql.log","topic":"mysql"}]
+2020-05-30T20:01:59.496+0800	DEBUG	dao/data.go:64	etcd value: [{"path":"D:\\nginx.log","topic":"nginx"},{"path":"D:\\mysql.log","topic":"mysql"}]
+2020-05-30T20:03:10.793+0800	DEBUG	WebServer/main.go:33	载入配置成功:192.168.1.111:2380, /logagentabc/
+2020-05-30T20:03:27.313+0800	DEBUG	WebServer/main.go:33	载入配置成功:192.168.1.111:2381, /logagent/
+2020-05-30T20:03:32.859+0800	ERROR	dao/data.go:114	获取所有key失败...%!(EXTRA context.deadlineExceededError=context deadline exceeded)
+2020-05-30T20:04:23.706+0800	DEBUG	WebServer/main.go:33	载入配置成功:192.168.1.111:2380, /logagent/
+2020-05-30T20:04:30.820+0800	DEBUG	dao/data.go:64	etcd value: [{"path":"D:\\nginx.log","topic":"nginx"},{"path":"D:\\mysql.log","topic":"mysql"}]
+2020-05-30T20:04:36.209+0800	DEBUG	dao/data.go:64	etcd value: [{"path":"D:\\nginx.log","topic":"nginx"},{"path":"D:\\mysql.log","topic":"mysql"}]
+2020-05-30T20:05:00.074+0800	DEBUG	dao/data.go:64	etcd value: [{"path":"D:\\nginx.log","topic":"nginx"},{"path":"D:\\mysql.log","topic":"mysql"}]
+2020-05-30T20:05:07.004+0800	DEBUG	dao/data.go:64	etcd value: [{"path":"D:\\mysql.log","topic":"mysql"}]
+2020-05-30T20:05:27.682+0800	DEBUG	dao/data.go:64	etcd value: [{"path":"D:\\mysql.log","topic":"mysql"},{"path":"D:\\nginx.log","topic":"nginx"}]
+2020-05-30T20:05:31.647+0800	DEBUG	dao/data.go:64	etcd value: [{"path":"D:\\mysql.log","topic":"mysql"},{"path":"D:\\nginx.log","topic":"nginx"}]
+2020-05-30T20:07:39.954+0800	DEBUG	dao/data.go:64	etcd value: [{"path":"D:\\mysql.log","topic":"mysql"}]
+2020-05-30T23:19:11.349+0800	DEBUG	dao/data.go:64	etcd value: [{"path":"D:\\mysql.log","topic":"mysql"}]
+2020-05-30T23:24:48.638+0800	DEBUG	WebServer/main.go:33	载入配置成功:192.168.1.111:2380, /logagent/
+2020-05-30T23:25:01.613+0800	DEBUG	dao/data.go:64	etcd value: [{"path":"D:\\mysql.log","topic":"mysql"}]

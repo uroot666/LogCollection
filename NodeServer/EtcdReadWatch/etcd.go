@@ -69,7 +69,7 @@ func WatchChang(key string, NewConfch chan<- []FilePath) (err error) {
 		for _, evt := range change.Events {
 			var NewConf []FilePath
 			//  fmt.Println(string(evt.Kv.Value))
-			LogObj.Debugf("etcd get value: %v", evt.Kv.Value)
+			LogObj.Debugf("etcd get value: %s", evt.Kv.Value)
 			if evt.Type != clientv3.EventTypeDelete {
 				err = json.Unmarshal(evt.Kv.Value, &NewConf)
 				if err != nil {
