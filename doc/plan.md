@@ -4,10 +4,6 @@
 ### 1
 ### 2
 ### 4
-<<<<<<< HEAD
 ### hot_fix - master
 ### master
-=======
-### hot_fix - hot_fix
-### hot_fix
->>>>>>> hot_fix
+### merge master
